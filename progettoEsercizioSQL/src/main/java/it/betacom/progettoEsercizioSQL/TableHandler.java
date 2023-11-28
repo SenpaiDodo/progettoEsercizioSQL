@@ -121,14 +121,14 @@ public class TableHandler {
 					System.out.println(sql);
 					stmt.executeUpdate(sql);
 				}
-				System.out.println("Popolazione tabella 'partecipante' avvenuta con successo");
+				logger.info("Popolazione tabella 'partecipante' avvenuta con successo.");
 				
 				closeTableHandlerConnection();
 			} catch (FileNotFoundException e) {
-				System.out.println("Errore file non trovato: " + e.getMessage());
+				logger.error("Errore file non trovato: " + e.getMessage());
 			}
 		} catch (SQLException e1) {
-			System.out.println("Errore popolazione tabella 'partecipante': " + e1.getMessage());
+			logger.error("Errore popolazione tabella 'partecipante': " + e1.getMessage());
 		}
 	}
 	
@@ -155,11 +155,13 @@ public class TableHandler {
                 int id = resultSet.getInt("id_partecipante");
                 String nome = resultSet.getString("nome_partecipante");
                 String sede = resultSet.getString("sede_partecipante");
+                
+                logger.info("Estrazione partecipante " + nome + " avvenuto con successo");
 
                 return new Partecipante(id, nome, sede);
             }
         } catch (SQLException e) {
-        	System.out.println("Errore estrazione dalla tabella 'partecipante': " + e.getMessage());
+        	logger.error("Errore estrazione dalla tabella 'partecipante': " + e.getMessage());
 		}
 
         return null;
@@ -171,8 +173,10 @@ public class TableHandler {
             preparedStatement.setInt(1, idPartecipante);
             preparedStatement.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
             preparedStatement.executeUpdate();
+            
+            logger.info("Inserimento partecipante nella tabella 'estrazione' avvenuto con successo");
         } catch (SQLException e) {
-        	System.out.println("Errore inserimento estrazione nella tabella 'estrazione': " + e.getMessage());
+        	logger.error("Errore inserimento estrazione nella tabella 'estrazione': " + e.getMessage());
 		}
     }
     
@@ -204,8 +208,9 @@ public class TableHandler {
 
                 System.out.println(nomePartecipante + " - " + sedePartecipante + ": " + numEstrazioni + " estrazioni");
             }
+            logger.info("Stampa situazione tabella 'estrazione' in console avvenuta con successo");
         } catch (SQLException e) {
-        	System.out.println("Errore stampa situazione estrazioni nella tabella 'estrazione': " + e.getMessage());
+        	logger.error("Errore stampa situazione estrazioni nella tabella 'estrazione': " + e.getMessage());
 		}
     }
     
@@ -221,9 +226,9 @@ public class TableHandler {
 		try {
 			PdfWriter.getInstance(document, new FileOutputStream(pdf_path));
 		} catch (FileNotFoundException e) {
-			System.out.println("Errore file 'situazione_estrazioni.pdf' non trovato: " + e.getMessage());
+			logger.error("Errore file 'situazione_estrazioni.pdf' non trovato: " + e.getMessage());
 		} catch (DocumentException e) {
-			System.out.println("Errore caricamento file 'situazione_estrazioni.pdf': " + e.getMessage());
+			logger.error("Errore caricamento file 'situazione_estrazioni.pdf': " + e.getMessage());
 		}
 		document.open();
 
@@ -241,12 +246,12 @@ public class TableHandler {
 				document.add(new Paragraph(line));
 			}
 		} catch (SQLException e) {
-			System.out.println("Errore stampa situazione estrazioni nella tabella 'estrazione' nel file .pdf: " + e.getMessage());
+			logger.error("Errore stampa situazione estrazioni nella tabella 'estrazione' nel file .pdf: " + e.getMessage());
 		} catch (DocumentException e) {
-			System.out.println("Errore sull'uso file 'situazione_estrazioni.pdf': " + e.getMessage());
+			logger.error("Errore sull'uso file 'situazione_estrazioni.pdf': " + e.getMessage());
 		}
 
 		document.close();
-		System.out.println("File PDF generato con successo: " + pdf_path);
+		logger.info("File PDF generato con successo: " + pdf_path);
 	}
 }
